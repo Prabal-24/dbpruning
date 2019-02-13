@@ -30,8 +30,11 @@ class SchemaGeneratorWorker
     exp = RubyExpect::Expect.spawn("psql -U #{user_name} -d #{db_name} -f #{dump_file_name}")
     exp.procedure do
       each do
-        expect "Password:" do
+        expect "Password for user #{user_name}:" do
           send password
+        end
+        expect /\s*/ do
+          send ""
         end
         expect /\$\s*$/ do
           send ""
