@@ -3,8 +3,8 @@ class SchemaGeneratorWorker
   require 'pg'
   require 'ruby_expect'
 
-  def perform(host_name,port_no,user_name,password,db_name,dump_file_name)
-    byebug
+  def perform(host_name,port_no,user_name,password,db_name)
+    dump_file_name = db_name + ".dump"
     exp = RubyExpect::Expect.spawn("pg_dump --host #{host_name}  --port #{port_no} --username #{user_name} --file #{dump_file_name} -s #{db_name}")
     exp.procedure do
       each do
