@@ -1,0 +1,716 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.6.5
+-- Dumped by pg_dump version 11.1
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.ar_internal_metadata (
+    key character varying NOT NULL,
+    value character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.ar_internal_metadata OWNER TO housing;
+
+--
+-- Name: communication_statuses; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.communication_statuses (
+    id integer NOT NULL,
+    name character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.communication_statuses OWNER TO housing;
+
+--
+-- Name: communication_statuses_id_seq; Type: SEQUENCE; Schema: public; Owner: housing
+--
+
+CREATE SEQUENCE public.communication_statuses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.communication_statuses_id_seq OWNER TO housing;
+
+--
+-- Name: communication_statuses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: housing
+--
+
+ALTER SEQUENCE public.communication_statuses_id_seq OWNED BY public.communication_statuses.id;
+
+
+--
+-- Name: email_logs; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.email_logs (
+    id integer NOT NULL,
+    email_uuid character varying,
+    communication_status_id integer,
+    request character varying,
+    request_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    reason text
+);
+
+
+ALTER TABLE public.email_logs OWNER TO housing;
+
+--
+-- Name: email_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: housing
+--
+
+CREATE SEQUENCE public.email_logs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.email_logs_id_seq OWNER TO housing;
+
+--
+-- Name: email_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: housing
+--
+
+ALTER SEQUENCE public.email_logs_id_seq OWNED BY public.email_logs.id;
+
+
+--
+-- Name: orders; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.orders (
+    id integer NOT NULL,
+    buyer_profile_uuid character varying NOT NULL,
+    seller_employee_id integer NOT NULL,
+    term_sheet_number character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    status character varying,
+    current_assignee integer,
+    package_ids integer[],
+    product_info jsonb,
+    "references" jsonb,
+    notes text,
+    old_pricing boolean DEFAULT false,
+    city_bounding_box_uuid character varying,
+    transaction_date date,
+    billing_address text,
+    amount integer,
+    tds_deducted integer,
+    cost_price integer,
+    gst_amount integer,
+    is_cdt boolean,
+    sub_status character varying
+);
+
+
+ALTER TABLE public.orders OWNER TO housing;
+
+--
+-- Name: orders_actions; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.orders_actions (
+    id integer NOT NULL,
+    order_id integer,
+    employee_id integer,
+    action character varying,
+    comment text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    is_valid boolean DEFAULT true
+);
+
+
+ALTER TABLE public.orders_actions OWNER TO housing;
+
+--
+-- Name: orders_actions_id_seq; Type: SEQUENCE; Schema: public; Owner: housing
+--
+
+CREATE SEQUENCE public.orders_actions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.orders_actions_id_seq OWNER TO housing;
+
+--
+-- Name: orders_actions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: housing
+--
+
+ALTER SEQUENCE public.orders_actions_id_seq OWNED BY public.orders_actions.id;
+
+
+--
+-- Name: orders_approvals; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.orders_approvals (
+    id integer NOT NULL,
+    order_id integer NOT NULL,
+    approval_type character varying NOT NULL,
+    employee_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    status character varying
+);
+
+
+ALTER TABLE public.orders_approvals OWNER TO housing;
+
+--
+-- Name: orders_approvals_id_seq; Type: SEQUENCE; Schema: public; Owner: housing
+--
+
+CREATE SEQUENCE public.orders_approvals_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.orders_approvals_id_seq OWNER TO housing;
+
+--
+-- Name: orders_approvals_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: housing
+--
+
+ALTER SEQUENCE public.orders_approvals_id_seq OWNED BY public.orders_approvals.id;
+
+
+--
+-- Name: orders_finance_details; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.orders_finance_details (
+    id integer NOT NULL,
+    order_id integer NOT NULL,
+    status character varying,
+    payment_handover_date date,
+    payment_handedover_to character varying,
+    payment_deposit_date date,
+    comments text,
+    tax_invoice_number character varying,
+    tax_invoice_sent character varying,
+    tax_invoice_date date,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    payment_clearance_date date
+);
+
+
+ALTER TABLE public.orders_finance_details OWNER TO housing;
+
+--
+-- Name: orders_finance_details_id_seq; Type: SEQUENCE; Schema: public; Owner: housing
+--
+
+CREATE SEQUENCE public.orders_finance_details_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.orders_finance_details_id_seq OWNER TO housing;
+
+--
+-- Name: orders_finance_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: housing
+--
+
+ALTER SEQUENCE public.orders_finance_details_id_seq OWNED BY public.orders_finance_details.id;
+
+
+--
+-- Name: orders_id_seq; Type: SEQUENCE; Schema: public; Owner: housing
+--
+
+CREATE SEQUENCE public.orders_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.orders_id_seq OWNER TO housing;
+
+--
+-- Name: orders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: housing
+--
+
+ALTER SEQUENCE public.orders_id_seq OWNED BY public.orders.id;
+
+
+--
+-- Name: orders_payment_details; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.orders_payment_details (
+    id integer NOT NULL,
+    order_id integer NOT NULL,
+    transaction_date date,
+    billing_address text,
+    amount integer NOT NULL,
+    tds_deducted integer,
+    cheque_amount integer,
+    cheque_number character varying,
+    cheque_bank_name character varying,
+    cheque_date date,
+    online_amount integer,
+    online_utr character varying,
+    online_bank_name character varying,
+    cash_amount integer,
+    cash_deposit_slip_number character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    cost_price integer,
+    gst_amount integer,
+    cheque_expected_deposit_date date,
+    payment_modes character varying[]
+);
+
+
+ALTER TABLE public.orders_payment_details OWNER TO housing;
+
+--
+-- Name: orders_payment_details_id_seq; Type: SEQUENCE; Schema: public; Owner: housing
+--
+
+CREATE SEQUENCE public.orders_payment_details_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.orders_payment_details_id_seq OWNER TO housing;
+
+--
+-- Name: orders_payment_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: housing
+--
+
+ALTER SEQUENCE public.orders_payment_details_id_seq OWNED BY public.orders_payment_details.id;
+
+
+--
+-- Name: orders_payment_modes; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.orders_payment_modes (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.orders_payment_modes OWNER TO housing;
+
+--
+-- Name: orders_payment_modes_id_seq; Type: SEQUENCE; Schema: public; Owner: housing
+--
+
+CREATE SEQUENCE public.orders_payment_modes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.orders_payment_modes_id_seq OWNER TO housing;
+
+--
+-- Name: orders_payment_modes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: housing
+--
+
+ALTER SEQUENCE public.orders_payment_modes_id_seq OWNED BY public.orders_payment_modes.id;
+
+
+--
+-- Name: orders_payment_statuses; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.orders_payment_statuses (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.orders_payment_statuses OWNER TO housing;
+
+--
+-- Name: orders_payment_statuses_id_seq; Type: SEQUENCE; Schema: public; Owner: housing
+--
+
+CREATE SEQUENCE public.orders_payment_statuses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.orders_payment_statuses_id_seq OWNER TO housing;
+
+--
+-- Name: orders_payment_statuses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: housing
+--
+
+ALTER SEQUENCE public.orders_payment_statuses_id_seq OWNED BY public.orders_payment_statuses.id;
+
+
+--
+-- Name: orders_payments_details; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.orders_payments_details (
+    id integer NOT NULL,
+    order_id integer NOT NULL,
+    amount integer,
+    payment_mode_id integer NOT NULL,
+    cheque_date date,
+    instrument_number character varying,
+    bank_name character varying,
+    cheque_expected_deposit_date date,
+    payment_status_id integer NOT NULL,
+    handover_date date,
+    deposit_date date,
+    handover_to character varying,
+    comments text,
+    tax_invoice_number character varying,
+    tax_invoice_sent character varying,
+    tax_invoice_date date,
+    payment_clearance_date date,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.orders_payments_details OWNER TO housing;
+
+--
+-- Name: orders_payments_details_id_seq; Type: SEQUENCE; Schema: public; Owner: housing
+--
+
+CREATE SEQUENCE public.orders_payments_details_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.orders_payments_details_id_seq OWNER TO housing;
+
+--
+-- Name: orders_payments_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: housing
+--
+
+ALTER SEQUENCE public.orders_payments_details_id_seq OWNED BY public.orders_payments_details.id;
+
+
+--
+-- Name: packages; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.packages (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    subscription_packages character varying[],
+    product_ids integer[]
+);
+
+
+ALTER TABLE public.packages OWNER TO housing;
+
+--
+-- Name: packages_id_seq; Type: SEQUENCE; Schema: public; Owner: housing
+--
+
+CREATE SEQUENCE public.packages_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.packages_id_seq OWNER TO housing;
+
+--
+-- Name: packages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: housing
+--
+
+ALTER SEQUENCE public.packages_id_seq OWNED BY public.packages.id;
+
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: housing
+--
+
+CREATE TABLE public.schema_migrations (
+    version character varying NOT NULL
+);
+
+
+ALTER TABLE public.schema_migrations OWNER TO housing;
+
+--
+-- Name: communication_statuses id; Type: DEFAULT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.communication_statuses ALTER COLUMN id SET DEFAULT nextval('public.communication_statuses_id_seq'::regclass);
+
+
+--
+-- Name: email_logs id; Type: DEFAULT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.email_logs ALTER COLUMN id SET DEFAULT nextval('public.email_logs_id_seq'::regclass);
+
+
+--
+-- Name: orders id; Type: DEFAULT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders ALTER COLUMN id SET DEFAULT nextval('public.orders_id_seq'::regclass);
+
+
+--
+-- Name: orders_actions id; Type: DEFAULT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_actions ALTER COLUMN id SET DEFAULT nextval('public.orders_actions_id_seq'::regclass);
+
+
+--
+-- Name: orders_approvals id; Type: DEFAULT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_approvals ALTER COLUMN id SET DEFAULT nextval('public.orders_approvals_id_seq'::regclass);
+
+
+--
+-- Name: orders_finance_details id; Type: DEFAULT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_finance_details ALTER COLUMN id SET DEFAULT nextval('public.orders_finance_details_id_seq'::regclass);
+
+
+--
+-- Name: orders_payment_details id; Type: DEFAULT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_payment_details ALTER COLUMN id SET DEFAULT nextval('public.orders_payment_details_id_seq'::regclass);
+
+
+--
+-- Name: orders_payment_modes id; Type: DEFAULT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_payment_modes ALTER COLUMN id SET DEFAULT nextval('public.orders_payment_modes_id_seq'::regclass);
+
+
+--
+-- Name: orders_payment_statuses id; Type: DEFAULT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_payment_statuses ALTER COLUMN id SET DEFAULT nextval('public.orders_payment_statuses_id_seq'::regclass);
+
+
+--
+-- Name: orders_payments_details id; Type: DEFAULT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_payments_details ALTER COLUMN id SET DEFAULT nextval('public.orders_payments_details_id_seq'::regclass);
+
+
+--
+-- Name: packages id; Type: DEFAULT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.packages ALTER COLUMN id SET DEFAULT nextval('public.packages_id_seq'::regclass);
+
+
+--
+-- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.ar_internal_metadata
+    ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: communication_statuses communication_statuses_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.communication_statuses
+    ADD CONSTRAINT communication_statuses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: email_logs email_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.email_logs
+    ADD CONSTRAINT email_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_actions orders_actions_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_actions
+    ADD CONSTRAINT orders_actions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_approvals orders_approvals_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_approvals
+    ADD CONSTRAINT orders_approvals_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_finance_details orders_finance_details_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_finance_details
+    ADD CONSTRAINT orders_finance_details_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_payment_details orders_payment_details_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_payment_details
+    ADD CONSTRAINT orders_payment_details_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_payment_modes orders_payment_modes_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_payment_modes
+    ADD CONSTRAINT orders_payment_modes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_payment_statuses orders_payment_statuses_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_payment_statuses
+    ADD CONSTRAINT orders_payment_statuses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_payments_details orders_payments_details_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders_payments_details
+    ADD CONSTRAINT orders_payments_details_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: packages packages_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.packages
+    ADD CONSTRAINT packages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: housing
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: index_email_logs_on_communication_status_id; Type: INDEX; Schema: public; Owner: housing
+--
+
+CREATE INDEX index_email_logs_on_communication_status_id ON public.email_logs USING btree (communication_status_id);
+
+
+--
+-- Name: index_email_logs_on_email_uuid; Type: INDEX; Schema: public; Owner: housing
+--
+
+CREATE INDEX index_email_logs_on_email_uuid ON public.email_logs USING btree (email_uuid);
+
+
+--
+-- Name: index_email_logs_on_request_and_request_id; Type: INDEX; Schema: public; Owner: housing
+--
+
+CREATE INDEX index_email_logs_on_request_and_request_id ON public.email_logs USING btree (request, request_id);
+
+
+--
+-- Name: index_orders_payments_details_on_order_id; Type: INDEX; Schema: public; Owner: housing
+--
+
+CREATE INDEX index_orders_payments_details_on_order_id ON public.orders_payments_details USING btree (order_id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
